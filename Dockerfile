@@ -25,9 +25,3 @@ RUN git clone --branch=main https://github.com/zhaojw1998/Beat-Transformer
 
 # Install additional dependencies
 RUN pip install uvicorn==0.22.0 fastapi==0.95.1 librosa==0.10.1
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the app files to the container
-COPY . /app
