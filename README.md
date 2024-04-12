@@ -13,3 +13,12 @@ Contains the code for a simple microservice for beat detection. Because the inst
 10. pip install librosa==0.10.1
 11. Run everything else
 12. Pray
+
+If you are inside the main FYP repo, run this, will be easier
+```bash
+pip install spleeter
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113
+pip install Cython mido
+python setup.py develop --user
+pip install librosa==0.10.1
+```
