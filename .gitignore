@@ -3,3 +3,6 @@
 !*.ipynb
 !README.md
 !app.py
+!railway.json
+!runtime.txt
+!Dockerfile

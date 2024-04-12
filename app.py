@@ -106,14 +106,48 @@ PARAM_PATH = {
     7: "./Beat-Transformer/checkpoint/fold_7_trf_param.pt"
 }
 
-def main():
-    # Let's pass through command line. I will regret this later am I
-    if len(sys.argv) < 3:
-        print("Usage: python main.py <audio_file> <output_json>")
-        return
-    
-    audio_file = sys.argv[1]
-    x = split(audio_file)
+import os
+import numpy as np
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # My GPU is not good enough to run this model
+
+import random
+from contextlib import contextmanager
+
+@contextmanager
+def get_temp_file(extension: str):
+    def get_random_string():
+        s = "temp"
+        for _ in range(6):
+            s += "qwertyuiopasdfghjklzxcvbnm"[random.randint(0, 25)]
+        return s
+    def get_unique_filename(name):
+        # Check if the file already exists
+        if not os.path.isfile(f"{name}.{extension}"):
+            return f"{name}.{extension}"
+
+        # If the file already exists, add a number to the end of the filename
+        i = 1
+        while True:
+            new_name = f"{name} ({i}).{extension}"
+            if not os.path.isfile(new_name):
+                return new_name
+            i += 1
+    fn = get_unique_filename(get_random_string())
+    try:
+        with open(fn, 'w+b'):
+            pass
+        yield fn
+    finally:
+        if os.path.isfile(fn):
+            os.remove(fn)
+
+
+# The main function
+def beats_prediction(b: bytes):
+    with get_temp_file("wav") as temp_file:
+        with open(temp_file, 'w+b') as temp:
+            temp.write(b)
+        x = split(temp_file)
     dbn_downbeat_pred, dbn_beat_pred = predict_beats(x)
     downbeat_frames = np.array(dbn_downbeat_pred * 44100, dtype = np.int32).tolist()
     beat_frames = np.array(dbn_beat_pred * 44100, dtype = np.int32).tolist()
@@ -121,11 +155,29 @@ def main():
         "downbeat_frames": downbeat_frames,
         "beat_frames": beat_frames
     }
+    return data
 
-    output_json = sys.argv[2]
-    with open(output_json, 'w') as f:
-        f.write(json.dumps(data))
+def create_app():
+    from fastapi import FastAPI, HTTPException
+    from fastapi import Request
+    from fastapi.middleware.cors import CORSMiddleware
 
-if __name__ == "__main__":
-    os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # My GPU is not good enough to run this model
-    main()
+    app = FastAPI()
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=['*'],
+        allow_credentials=True,
+        allow_methods=['*'],
+        allow_headers=['*'],
+    )
+
+    @app.post('/beat')
+    async def root(r: Request):
+        audio_data = await r.body()
+        data = beats_prediction(audio_data)
+        return data
+
+    @app.get('/alive')
+    async def alive():
+        return {"alive": "true"}
