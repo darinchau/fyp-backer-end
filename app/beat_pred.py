@@ -18,13 +18,24 @@ from madmom.features.beats import DBNBeatTrackingProcessor
 from madmom.features.downbeats import DBNDownBeatTrackingProcessor
 
 import os
+from app.DilatedTransformer import Demixed_DilatedTransformerModel
 
-if not os.path.exists('./DilatedTransformer.py'):
-    import shutil
-    shutil.move('./Beat-Transformer/code/DilatedTransformer.py', './DilatedTransformer.py')
-    shutil.move('./Beat-Transformer/code/DilatedTransformerLayer.py', './DilatedTransformerLayer.py')
+PARAM_PATH = {
+    0: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_0_trf_param.pt"),
+    1: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_1_trf_param.pt"),
+    2: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_2_trf_param.pt"),
+    3: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_3_trf_param.pt"),
+    4: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_4_trf_param.pt"),
+    5: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_5_trf_param.pt"),
+    6: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_6_trf_param.pt"),
+    7: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_7_trf_param.pt")
+}
 
-from DilatedTransformer import Demixed_DilatedTransformerModel
+import numpy as np
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # My GPU is not good enough to run this model
+
+import random
+import tempfile
 
 # Audio separator
 separator = Separator('spleeter:5stems')
@@ -93,58 +104,12 @@ def predict_beats(x, fold = 4):
     dbn_downbeat_pred = dbn_downbeat_pred[dbn_downbeat_pred[:, 1] == 1][:, 0]
     return dbn_downbeat_pred, dbn_beat_pred
 
-PARAM_PATH = {
-    0: "./Beat-Transformer/checkpoint/fold_0_trf_param.pt",
-    1: "./Beat-Transformer/checkpoint/fold_1_trf_param.pt",
-    2: "./Beat-Transformer/checkpoint/fold_2_trf_param.pt",
-    3: "./Beat-Transformer/checkpoint/fold_3_trf_param.pt",
-    4: "./Beat-Transformer/checkpoint/fold_4_trf_param.pt",
-    5: "./Beat-Transformer/checkpoint/fold_5_trf_param.pt",
-    6: "./Beat-Transformer/checkpoint/fold_6_trf_param.pt",
-    7: "./Beat-Transformer/checkpoint/fold_7_trf_param.pt"
-}
-
-import os
-import numpy as np
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # My GPU is not good enough to run this model
-
-import random
-from contextlib import contextmanager
-
-@contextmanager
-def get_temp_file(extension: str):
-    def get_random_string():
-        s = "temp"
-        for _ in range(6):
-            s += "qwertyuiopasdfghjklzxcvbnm"[random.randint(0, 25)]
-        return s
-    def get_unique_filename(name):
-        # Check if the file already exists
-        if not os.path.isfile(f"{name}.{extension}"):
-            return f"{name}.{extension}"
-
-        # If the file already exists, add a number to the end of the filename
-        i = 1
-        while True:
-            new_name = f"{name} ({i}).{extension}"
-            if not os.path.isfile(new_name):
-                return new_name
-            i += 1
-    fn = get_unique_filename(get_random_string())
-    try:
-        with open(fn, 'w+b'):
-            pass
-        yield fn
-    finally:
-        if os.path.isfile(fn):
-            os.remove(fn)
-
-
 # The main function
 def beats_prediction(b: bytes):
-    with get_temp_file("wav") as temp_file:
-        with open(temp_file, 'w+b') as temp:
-            temp.write(b)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_file = os.path.join(temp_dir, 'temp.wav')
+        with open(temp_file, 'wb') as f:
+            f.write(b)
         x = split(temp_file)
     dbn_downbeat_pred, dbn_beat_pred = predict_beats(x)
     downbeat_frames = np.array(dbn_downbeat_pred * 44100, dtype = np.int32).tolist()
@@ -154,28 +119,3 @@ def beats_prediction(b: bytes):
         "beat_frames": beat_frames
     }
     return data
-
-def create_app():
-    from fastapi import FastAPI, HTTPException
-    from fastapi import Request
-    from fastapi.middleware.cors import CORSMiddleware
-
-    app = FastAPI()
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=['*'],
-        allow_credentials=True,
-        allow_methods=['*'],
-        allow_headers=['*'],
-    )
-
-    @app.post('/beat')
-    async def root(r: Request):
-        audio_data = await r.body()
-        data = beats_prediction(audio_data)
-        return data
-
-    @app.get('/alive')
-    async def alive():
-        return {"alive": "true"}

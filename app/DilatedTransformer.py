@@ -1,6 +1,6 @@
 import torch 
 from torch import nn 
-from DilatedTransformerLayer import DilatedTransformerLayer
+from .DilatedTransformerLayer import DilatedTransformerLayer
 from torch.nn import TransformerEncoderLayer as torchTransformerEncoderLayer
 
 
