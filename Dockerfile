@@ -18,7 +18,7 @@ RUN mv madmom tmp
 RUN mv tmp/* .
 RUN rm -rf tmp
 
-CMD ["python", "setup.py", "develop", "--user"]
+RUN python setup.py develop --user
 
 # Clone Beat-Transformer
 RUN git clone --branch=main https://github.com/zhaojw1998/Beat-Transformer
