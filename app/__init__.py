@@ -23,3 +23,5 @@ def create_app():
     @app.get('/alive')
     async def alive():
         return {"alive": "true"}
+
+    return app

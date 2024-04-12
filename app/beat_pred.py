@@ -18,7 +18,7 @@ from madmom.features.beats import DBNBeatTrackingProcessor
 from madmom.features.downbeats import DBNDownBeatTrackingProcessor
 
 import os
-from app.DilatedTransformer import Demixed_DilatedTransformerModel
+from .DilatedTransformer import Demixed_DilatedTransformerModel
 
 PARAM_PATH = {
     0: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_0_trf_param.pt"),
