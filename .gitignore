@@ -28,3 +28,4 @@ tox.ini
 *.wav
 .github
 requirements.txt
+.gitmodules
