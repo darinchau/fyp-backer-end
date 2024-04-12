@@ -31,7 +31,3 @@ WORKDIR /app
 
 # Copy the app files to the container
 COPY . /app
-
-# Move the files
-RUN mv ./Beat-Transformer/code/DilatedTransformer.py ./DilatedTransformer.py
-RUN mv ./Beat-Transformer/code/DilatedTransformerLayer.py ./DilatedTransformerLayer.py

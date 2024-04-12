@@ -17,16 +17,14 @@ from spleeter.separator import Separator
 from madmom.features.beats import DBNBeatTrackingProcessor
 from madmom.features.downbeats import DBNDownBeatTrackingProcessor
 
+import os
 
-# Move if necessary
-try:
-    from DilatedTransformer import Demixed_DilatedTransformerModel
-except ImportError:
-    raise RuntimeError("""Run this code first:
-import shutil
-shutil.move('./Beat-Transformer/code/DilatedTransformer.py', './DilatedTransformer.py')
-shutil.move('./Beat-Transformer/code/DilatedTransformerLayer.py', './DilatedTransformerLayer.py')
-""")
+if not os.path.exists('./DilatedTransformer.py'):
+    import shutil
+    shutil.move('./Beat-Transformer/code/DilatedTransformer.py', './DilatedTransformer.py')
+    shutil.move('./Beat-Transformer/code/DilatedTransformerLayer.py', './DilatedTransformerLayer.py')
+
+from DilatedTransformer import Demixed_DilatedTransformerModel
 
 # Audio separator
 separator = Separator('spleeter:5stems')
