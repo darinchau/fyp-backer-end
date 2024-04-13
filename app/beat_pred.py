@@ -23,7 +23,7 @@ from madmom.features.downbeats import DBNDownBeatTrackingProcessor
 import os
 from .DilatedTransformer import Demixed_DilatedTransformerModel
 
-PARAM_PATH = os.path.join(__file__, "../checkpoint/model.pt")
+PARAM_PATH = os.path.join(os.path.dirname(__file__), "../checkpoint/model.pt")
 
 import numpy as np
 import random
