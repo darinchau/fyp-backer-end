@@ -1,0 +1,10 @@
+--extra-index-url https://download.pytorch.org/whl/cu113
+spleeter==2.4.0
+torch 
+torchvision 
+torchaudio
+Cython 
+mido
+librosa==0.10.1 
+gunicorn==21.2.0
+git+https://github.com/CPJKU/madmom.git
