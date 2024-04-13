@@ -20,16 +20,7 @@ from madmom.features.downbeats import DBNDownBeatTrackingProcessor
 import os
 from .DilatedTransformer import Demixed_DilatedTransformerModel
 
-PARAM_PATH = {
-    0: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_0_trf_param.pt"),
-    1: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_1_trf_param.pt"),
-    2: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_2_trf_param.pt"),
-    3: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_3_trf_param.pt"),
-    4: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_4_trf_param.pt"),
-    5: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_5_trf_param.pt"),
-    6: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_6_trf_param.pt"),
-    7: os.path.join(__file__, "../Beat-Transformer/checkpoint/fold_7_trf_param.pt")
-}
+PARAM_PATH = os.path.join(__file__, "../checkpoint/model.pt")
 
 import numpy as np
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # My GPU is not good enough to run this model
@@ -79,8 +70,8 @@ def split(audio_dir: str):
     return x
 
 # Predict beats from the audio
-def predict_beats(x, fold = 4):
-    model.load_state_dict(torch.load(PARAM_PATH[fold], map_location=torch.device('cpu'))['state_dict'])
+def predict_beats(x):
+    model.load_state_dict(torch.load(PARAM_PATH, map_location=torch.device('cpu'))['state_dict'])
 
     # device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     device = torch.device('cpu')

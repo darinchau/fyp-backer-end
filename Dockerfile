@@ -13,10 +13,7 @@ RUN pip install torch torchvision torchaudio --extra-index-url https://download.
 RUN pip install Cython mido
 
 # Clone and install madmom
-RUN git clone --recursive https://github.com/CPJKU/madmom.git
-RUN mv madmom tmp
-RUN mv tmp/* .
-RUN rm -rf tmp
+RUN pip install -q -U git+https://github.com/CPJKU/madmom.git
 
 # Clone Beat-Transformer
 RUN git clone --branch=main https://github.com/zhaojw1998/Beat-Transformer
@@ -25,4 +22,4 @@ RUN git clone --branch=main https://github.com/zhaojw1998/Beat-Transformer
 RUN pip install uvicorn==0.22.0 fastapi==0.95.1 librosa==0.10.1 gunicorn==21.2.0
 
 # Shitmom
-CMD ["python", "setup.py", "develop", "--user", "&&", "python", "main.py"]
+CMD ["python", "main.py"]
