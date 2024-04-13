@@ -8,4 +8,6 @@ Cython
 mido
 librosa==0.10.1 
 gunicorn==21.2.0
+uvicorn==0.22.0 
+fastapi==0.95.1 
 git+https://github.com/CPJKU/madmom.git
