@@ -4,7 +4,7 @@
         "builder": "NIXPACKS"
     },
     "deploy": {
-        "startCommand": "gunicorn -k uvicorn.workers.UvicornWorker 'app:create_app()'",
+        "startCommand": "gunicorn -k --timeout 300 uvicorn.workers.UvicornWorker 'app:create_app()'",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10
     }
