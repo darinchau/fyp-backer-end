@@ -4,6 +4,9 @@ import sys
 import base64
 import json
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+os.environ['TF_ENABLE_MLIR_OPTIMIZATIONS'] = '1'
+
 import tensorflow as tf
 from librosa.core import stft
 from scipy.signal.windows import hann
@@ -23,8 +26,6 @@ from .DilatedTransformer import Demixed_DilatedTransformerModel
 PARAM_PATH = os.path.join(__file__, "../checkpoint/model.pt")
 
 import numpy as np
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # My GPU is not good enough to run this model
-
 import random
 import tempfile
 
