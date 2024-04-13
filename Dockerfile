@@ -20,6 +20,3 @@ RUN git clone --branch=main https://github.com/zhaojw1998/Beat-Transformer
 
 # Install additional dependencies
 RUN pip install uvicorn==0.22.0 fastapi==0.95.1 librosa==0.10.1 gunicorn==21.2.0
-
-# Shitmom
-CMD ["python", "main.py"]
